@@ -1,0 +1,52 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using TestApplication.DAL.Entities
+@model IEnumerable<TestApplication.Models.ProjectModels.ProjectIndexModel>
+@inject UserManager<User> _UserManager;
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    @{
+        var user = await _UserManager.GetUserAsync(User);
+        if (await _UserManager.IsInRoleAsync(user, "director") || await _UserManager.IsInRoleAsync(user, "manager"))
+        {
+            <a asp-action="Create">Добавить новый проект</a>
+        }
+    }
+
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+
+            </th>
+            <th>
+
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+    <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new {item.Id})
+            @Html.ActionLink("Details", "Details", new {item.Id})
+            @Html.ActionLink("Delete", "Delete", new {item.Id})
+        </td>
+        </tr>
+}
+    </tbody>
+</table>

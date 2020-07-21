@@ -1,0 +1,65 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using TestApplication.DAL
+@using TestApplication.DAL.Entities
+@model TestApplication.Models.IssueModels.IssueIndexListModel
+@inject UserManager<User> _UserManager;
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    @{
+
+        var user = await _UserManager.GetUserAsync(User);
+        var Check = await _UserManager.IsInRoleAsync(user, "director") || await _UserManager.IsInRoleAsync(user, "manager") && user.Id == Model.ManagerId;
+        if (Check)
+        {
+            <a asp-action="Create" asp-route-Id="@Model.ProjectId">Добавить новый проект</a>
+        }
+    }
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Заголовок:
+        </th>
+        <th>
+            Автор задачи:
+        </th>
+        <th>
+            Исполнитель задачи:
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Issues)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ManagerName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExecutorName)
+            </td>
+            <td>
+                @if (Check)
+                {
+                    @Html.ActionLink("Редактировать", "Edit",new { item.Id })
+                    @Html.ActionLink("Удалить", "Delete",  new { item.Id })
+                }
+                @Html.ActionLink("Подробнее", "Details",  new { item.Id })
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a asp-action="Details" asp-controller="Project" asp-route-Id="@Model.ProjectId">Вернуться к проекту</a>

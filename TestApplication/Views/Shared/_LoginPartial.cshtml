@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using TestApplication.DAL.Entities
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+    <ul class="navbar-nav">
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
+            </li>
+            <li class="nav-item">
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                </form>
+            </li>
+
+            var user = await UserManager.GetUserAsync(User);
+
+            if (await UserManager.IsInRoleAsync(user, "director"))
+            {
+
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Создать нового пользователя</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-controller="Roles" asp-action="UserList">Управление пользователями</a>
+                </li>
+            }
+    <li>
+        <a class="nav-link text-dark" asp-controller="Project" asp-action="Index">Проекты</a>
+    </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Войти</a>
+            </li>
+        }
+    </ul>

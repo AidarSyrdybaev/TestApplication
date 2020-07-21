@@ -1,0 +1,64 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using TestApplication.DAL.Entities
+@model TestApplication.Models.UserModels.UserInProjectListIndexModel
+@inject UserManager<User> _UserManager;
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+@{  
+    var user = await _UserManager.GetUserAsync(User);
+    var Check = await _UserManager.IsInRoleAsync(user, "director") || await _UserManager.IsInRoleAsync(user, "manager") && user.Id == Model.ManagerId;
+    if (Check)
+    {
+        <form method="post" asp-controller="User" asp-action="Add">
+            @Html.DropDownList("SelectedUserId", ViewBag.Users as SelectList);
+            <input type="hidden" name="ProjectId" value="@Model.ProjectId"/>
+            <input type="submit" value="Добавить пользователя"/>
+        </form>
+    }
+}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Фамилия
+        </th>
+        <th>
+            Имя
+        </th>
+        <th>
+            Отчество
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.userIndexModels) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Surname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MidlleName)
+            </td>
+            <td>
+                @if (Check)
+                {
+                    @Html.ActionLink("Edit", "Edit", "User", new { item.Id })
+                    @Html.ActionLink("Delete", "Delete", "User", new { item.Id })
+                }
+                @Html.ActionLink("Details", "Details", "User", new { item.Id })
+
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<a asp-action="Details" asp-controller="Project" asp-route-Id="@Model.ProjectId">Вернуться к проекту</a>
